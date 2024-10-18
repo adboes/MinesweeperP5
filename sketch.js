@@ -1,21 +1,42 @@
-let canv_width = 400;
+// DIFFICULTY AND CANVAS SIZE
+let rows = 10; // Number of rows and collums (its always the same!)
+let mines = 10; // Number of mines on the field
+
+let canv_width = 400; // in px
 let canv_height = 400;
-let rows = 10; // Number of rows
+
+
 let cols = rows; // Number of columns
 let cellWidth = canv_width / cols;  // Width of each cell
 let cellHeight = canv_height / rows; // Height of each cell
 
 let cells = [];
 let cells_mines = [];
-let mines = 10;
+
 let num_cells = 0; // fields to be found
 let found_cells = 0; // already found fields
+let rem_mines = mines;
 
 function setup() {
   refresh();
 }
 
 function draw() {
+  // write the number of found & to-be-found mines next to the canvas
+  beginShape()
+  fill(255)
+  stroke(255)
+  strokeWeight(0)
+  rect(canv_width, 0, width - canv_width, height);
+  endShape()
+  
+  beginShape()
+  fill(0);
+  strokeWeight();
+  textAlign(RIGHT);
+  textSize(20); // Adjust text size to fit inside cell
+  text(`Remaining Mines: ${rem_mines}`, width, height / 5);
+  endShape()
 }
 
 function refresh() {
@@ -25,7 +46,7 @@ function refresh() {
   found_cells = 0; // already found fields
   
   // Canvas setup
-  createCanvas(canv_width, canv_height);
+  createCanvas(700, 550);
   num_cells = rows * cols - mines;
 
   // Initialize the cells array as a 2D grid
@@ -80,7 +101,8 @@ function calculateNeighborMines(i, j) {
       let neighborX = i + x;
       let neighborY = j + y;
       
-      if (neighborX >= 0 && neighborX < cols && neighborY >= 0 && neighborY < rows) {
+      if (neighborX >= 0 && neighborX < cols && 
+          neighborY >= 0 && neighborY < rows) {
         if (cells[neighborX][neighborY].mine) {
           total++;
         }
@@ -111,13 +133,18 @@ function flagCell(c) {
       // Draw red "X" on the cell
       textAlign(CENTER, CENTER);
       fill(255, 0, 0); // Red for the "X"
+      strokeWeight(3)
+      stroke(0)
       textSize(cellHeight / 2); // Adjust text size to fit inside cell
       text("X", c.x + cellWidth / 2, c.y + cellHeight / 2);
       c.flagged = true; // Mark cell as flagged
+      rem_mines--;
     } else {
       // Unflag the cell (clear the X)
+      fill(200)
       c.drawCell();  // Redraw the cell to remove the flag
       c.flagged = false; // Unmark the flag
+      rem_mines++;
     }
   }
 }
@@ -131,9 +158,13 @@ function updateCell(c) {
   
   if (c.mine) {
     console.log("Boom! You clicked a mine.");
-    fill(255, 0, 0); // Red for mines
-    // Add a delay to reset the game so player can see they lost
-    setTimeout(refresh, 1000); // 1 second delay before reset
+    
+    cells_mines.forEach(function(temp_c) {
+        fill(255,0,0);
+        temp_c.drawCell();
+      })
+    setTimeout(refresh, 2000); // 2 second delay before reset
+    
   } else {
     fill(255); // white for safe cells
     c.drawCell()
@@ -141,8 +172,12 @@ function updateCell(c) {
     found_cells++;
     if (found_cells == num_cells) {
       console.log("You've won! Congratulations!");
-      fill(0, 255, 0);
-      setTimeout(refresh, 1000); // 1 second delay before reset
+      
+      cells_mines.forEach(function(temp_c) {
+        fill(0,255,0);
+        temp_c.drawCell();
+      })
+      setTimeout(refresh, 2000); // 2 second delay before reset
     }
     
     if (c.num > 0) {
@@ -153,6 +188,7 @@ function updateCell(c) {
       text(c.num, c.x + cellWidth / 2, c.y + cellHeight / 2);
     }
 
+    // free all fields containing zeros or numbers neighbouring each other
     if (c.num === 0)    {  
         // Check the 8 surrounding cells
         for (let x = -1; x <= 1; x++) {
@@ -164,7 +200,7 @@ function updateCell(c) {
                 neighborY >= 0 && neighborY < rows) 
             {
               nb = cells[neighborX][neighborY]
-              if (nb.num < 10 && nb.clicked === false) 
+              if (nb.clicked === false) 
               {
                 updateCell(nb);
               }
@@ -173,7 +209,7 @@ function updateCell(c) {
         }
       }
     
-  }
+    }
   }
 }
 
