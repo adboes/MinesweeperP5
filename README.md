@@ -9,8 +9,8 @@ Updates:
 
 
 
-## Version 1: (obsolete)
-Known Bugs:
+>## Version 1: (obsolete)
+>Known Bugs:
 >- Game doesn't console.log correctly for a reason still to be found (fixed)
 >- On clicking a mine or winning the game the winning/loosing colors aren't displayed correctly, it resets instantly instead (fixed)
 >- unflagging isn't possible - so don't make mistakes (fixed)
