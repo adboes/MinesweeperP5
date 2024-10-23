@@ -6,7 +6,7 @@ Updates:
   - Displays the amount of mines left to flag next to the minefield
   - highlights bombs red/green wheter you win or loose as intended now
 
-<span style=color:grey>
+<span style="color:grey">
 ## Version 1: (obsolete)
 Known Bugs:
   - Game doesn't console.log correctly for a reason still to be found (fixed)
